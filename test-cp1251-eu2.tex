@@ -3,7 +3,9 @@
 
 \usepackage[cp1251]{xinputenc}
 
-\ifx\Umathchar\undefined\else
+\ifx\Umathchar\undefined
+\usepackage[X2]{fontenc}
+\else
 \usepackage{fontspec}
 \setmainfont{Arial}
 \input{eu2x2enc.def}
