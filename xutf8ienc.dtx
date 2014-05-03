@@ -41,7 +41,7 @@
 \begin{document}
  \maketitle
  \tableofcontents
- \DocInput{utf8ienc.dtx}
+ \DocInput{xutf8ienc.dtx}
 \end{document}
 %</driver>
 % \fi
@@ -286,18 +286,32 @@
 %    the |\fi| out of the way (in case the command has arguments) and
 %    executes it.
 %    \begin{macrocode}
+\def\UTFviiieutwo{EU2}%
+\def\UTFviii@decode#1:#2#3#4#5#6\@nil{%
+\ifx\@empty#3%
+   % 1 octet
+   \numexpr`#2\relax
+\else\ifx\@empty#4%
+   % 2 octet
+   \numexpr(`#2-"C0)*"40 + (`#3-"80)\relax
+\else\ifx\@empty#5%
+     \numexpr(`#2-"E0)*"1000 + (`#3-"80)*"40 + (`#3-"80)\relax
+\else
+     \numexpr(`#2-"F0)*"40000 + (`#3-"80)*"1000+ (`#4-"80)*"40 + (`#5-"80)\relax
+\fi\fi\fi
+}
 \def\UTFviii@defined#1{%
-  \ifx#1\relax
-%    \end{macrocode}
-%    The endline character has a special definition within the
-%    inputenc package (it is gobbling spaces). For this reason we
-%    can't produce multiline strings without some precaution.
-% \changes{v1.1b}{2004/02/09}{No newlines allowed in error messages}
-% \changes{v1.1g}{2005/09/27}{Real spaces do not show up so use \cs{space}}
-%    \begin{macrocode}
-      \PackageError{inputenc}{Unicode\space char\space \string#1\space 
+\ifx#1\relax
+\typeout{[\f@encoding] No\space definition\space for\space codepoint\space
+\number\expandafter\UTFviii@decode\string#1\@empty\@empty\@empty\@nil}%
+\ifx\f@encoding\UTFviiieutwo
+\luatexUchar\numexpr\expandafter\UTFviii@decode\string#1\@empty\@empty\@empty\@nil\relax
+\else
+      \PackageError{inputenc}{Unicode\space char\space \string#1\space
                               not\space set\space up\space
                               for\space use\space with\space LaTeX}\@eha
+?%
+\fi
   \else\expandafter
     #1%
   \fi
