@@ -2,7 +2,9 @@
 
 \usepackage[utf8]{xinputenc}
 
-\ifx\Umathchar\undefined\else
+\ifx\Umathchar\undefined
+\usepackage[X2,T1]{fontenc}
+\else
 \usepackage{fontspec}
 \setmainfont{Arial}
 \fi
@@ -11,6 +13,7 @@
 
 ä,ü,ö,Ö,Ä,Ü,á,é,ó,à,ù,ò,ß,test
 
+\ifx\Umathchar\undefined\fontencoding{X2}\selectfont\fi
 А,Б,В,а,б,в, cyrillic test
 
 {\fontfamily{cmr}\fontencoding{OT1}\selectfont
