@@ -30,8 +30,8 @@
 % \iffalse
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage[ascii]{inputenc}
-\GetFileInfo{inputenc.sty}
+\usepackage[ascii]{xinputenc}
+\GetFileInfo{xinputenc.sty}
 \title{\filename}
 \date{\fileversion\space\filedate}
  \author{%
@@ -49,6 +49,7 @@
 %
 % \CheckSum{3522}
 %
+%<*!lua>
 %% \CharacterTable
 %%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
@@ -64,6 +65,7 @@
 %%   Right bracket \]     Circumflex    \^     Underscore    \_
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
+%</!lua>
 %
 % \changes{v0.01}{1994/03/09}{Created file.}
 % \changes{v0.02}{1994/07/14}{Replaced \cs{Dh} by \cs{DH} and \cs{Th}
@@ -402,7 +404,7 @@
 % We announce the files:
 %    \begin{macrocode}
 %<package>\NeedsTeXFormat{LaTeX2e}[1995/12/01]
-%<package>\ProvidesPackage{inputenc}
+%<package>\ProvidesPackage{xinputenc}
 %<ascii> \ProvidesFile{ascii.def}
 %<latin1> \ProvidesFile{latin1.def}
 %<latin2> \ProvidesFile{latin2.def}
@@ -425,7 +427,7 @@
 %<cp1252&!ansinew>  \ProvidesFile{cp1252.def}
 %<cp1250>  \ProvidesFile{cp1250.def}
 %<cp1257>  \ProvidesFile{cp1257.def}
-   [2014/05/03 v2.0a Input encoding file]
+%<!lua>   [2014/05/03 v2.0a Input encoding file]
 %<cp850>%%
 %<cp850>%% If you need a Euro symbol, try cp858 instead.
 %<cp850>%%
@@ -559,7 +561,19 @@
 %    produces a warning message if no suitable definitions get read.
 %
 %    \begin{macrocode}
-\ifx\Umathchar\@undefined
+\ifx\directlua\@undefined\else
+\PackageInfo{xinputenc}{lualatex in 8bit mode}
+\directlua{require("xinputenc")}
+\directlua{xinputenc.register_callbacks()}
+\fi
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\ifx\XeTeXversion\@undefined\else
+\PackageInfo{xinputenc}{xelatex in 8bit mode}
+\XeTeXinputencoding "iso-8859-1"
+\XeTeXdefaultencoding "iso-8859-1"
+\fi
 %    \end{macrocode}
 %
 %    \begin{macrocode}
@@ -593,6 +607,16 @@
 % \changes{v1.1a}{2006/02/22}{Added \cs{inputencodingname}}
 %    \begin{macrocode}
   \edef\inputencodingname{#1}% 
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\ifx\XeTeXversion\@undefined\else
+\XeTeXinputencoding "iso-8859-1"
+\XeTeXdefaultencoding "iso-8859-1"
+\fi
+\ifx\directlua\@undefined\else
+\directlua{xinputenc.set_option("latin1")}%
+\fi
 %    \end{macrocode}
 %
 %    Now we make all potential input characters active.
@@ -642,44 +666,6 @@
 %    \begin{macrocode}
   \the\inpenc@posthook
 }  
-%    \end{macrocode}
-%
-%    \begin{macrocode}
-\else
-%    \end{macrocode}
-% Unicode based TeX engines do not require this package at all, and always use UTF-8
-% input. Allow the package to be used if |[uf8]| or |[ascii]| options are used to simplify
-% switching between TeX engines.
-%    \begin{macrocode}
-\def\inputencoding#1{%
-\edef\reserved@a{#1}%
-\def\reserved@b{utf8x}%
-\ifx\reserved@a\reserved@b\def\reserved@a{utf8}\fi
-\def\reserved@b{utf8}%
-\ifx\reserved@a\reserved@b
-\PackageWarningNoLine
-    {inputenc}%
-    {inputenc package ignored with utf8 based engines}%
-\else
-\def\reserved@b{x-ascii}%
-\ifx\reserved@a\reserved@b\def\reserved@a{ascii}\fi
-\def\reserved@b{ascii}%
-\ifx\reserved@a\reserved@b
-\PackageWarningNoLine
-    {inputenc}%
-    {inputenc can't be used to ensure 7bit clean source\MessageBreak
-    with a utf engine: Package ignored: utf8 assumed}%
-\else
-\PackageError
-    {inputenc}%
-    {inputenc is not designed for xetex or luatex.\MessageBreak
-     only UTF-8 supported}%
-    {For xelatex or lualatex save the document in UTF-8 encoding\MessageBreak
-    and do not use inputenc, or use the [utf8] option.}
-\fi
-\fi
-}
-\fi
 %    \end{macrocode}
 % \end{macro}
 %
@@ -3102,37 +3088,6 @@ end
        callback.register('process_input_buffer', xinputenc.fake_utf_read)
     end
 
-
-
-
-xinputenc.activated_characters = {}
-xinputenc.characters_are_activated = false
-
-function xinputenc.declare_character(c)
-    xinputenc.activated_characters[tonumber(c)] = true
-end
-
-function xinputenc.force_characters_activated ()
-    xinputenc.characters_are_activated = true
-end
-
-function xinputenc.activate_characters()
-    if not xinputenc.characters_are_activated then
-        for n, _ in pairs(xinputenc.activated_characters) do
-            tex.sprint(string.format('\\catcode %d\\active',n))
-        end
-        xinputenc.characters_are_activated = true
-    end
-end
-
-function xinputenc.desactivate_characters()
-    if xinputenc.characters_are_activated then
-        for n, _ in pairs(xinputenc.activated_characters) do
-            tex.sprint(string.format('\\catcode %d=11',n))
-        end
-        xinputenc.characters_are_activated = false
-    end
-end
 %</lua>
 %    \end{macrocode}
 %
