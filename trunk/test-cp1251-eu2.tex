@@ -1,8 +1,15 @@
+% -*- coding: windows-1251-dos -*-
 \documentclass{article}
-\usepackage{fontenc}
-\setmainfont{Arial}
+
 \usepackage[cp1251]{xinputenc}
+
+\ifx\Umathchar\undefined\else
+\usepackage{fontspec}
+\setmainfont{Arial}
+\input{eu2x2enc.def}
+\fi
 
 \begin{document}
 À,Á,Â,à,á,â
 \end{document}
+

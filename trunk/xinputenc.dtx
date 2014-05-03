@@ -609,16 +609,6 @@
   \edef\inputencodingname{#1}% 
 %    \end{macrocode}
 %
-%    \begin{macrocode}
-\ifx\XeTeXversion\@undefined\else
-\XeTeXinputencoding "iso-8859-1"
-\XeTeXdefaultencoding "iso-8859-1"
-\fi
-\ifx\directlua\@undefined\else
-\directlua{xinputenc.set_option("latin1")}%
-\fi
-%    \end{macrocode}
-%
 %    Now we make all potential input characters active.
 % \changes{v0.994}{2000/01/27}{Allow change also in horizontal mode
 %      (pr/2888)}

@@ -1,33 +1,11 @@
 \documentclass{article}
 
 \usepackage[utf8]{xinputenc}
+
+\ifx\Umathchar\undefined\else
 \usepackage{fontspec}
 \setmainfont{Arial}
-\makeatletter
-\def\UTFviii@decode#1:#2#3#4#5#6\@nil{%
-\ifx\@empty#3%
-   % 1 octet
-   \numexpr`#2\relax
-\else\ifx\@empty#4%
-   % 2 octet
-   \numexpr(`#2-"C0)*"40 + (`#3-"80)\relax
-\else\ifx\@empty#5%
-% 3 octet
-     \numexpr(`#2-"E0)*"1000 + (`#3-"80)*"40 + (`#3-"80)\relax
-\else
-% 4 octet
-     \numexpr(`#2-"F0)*"40000 + (`#3-"80)*"1000+ (`#4-"80)*"40 + (`#5-"80)\relax
-\fi\fi\fi
-}
-\def\UTFviii@defined#1{%
-  \ifx#1\relax
-\typeout{No definition for codepoint \number\expandafter\UTFviii@decode\string#1\@empty\@empty\@empty\@nil}%
-\luatexUchar\numexpr\expandafter\UTFviii@decode\string#1\@empty\@empty\@empty\@nil\relax
-  \else\expandafter
-    #1%
-  \fi
-}
-\makeatother
+\fi
 
 \begin{document}
 
