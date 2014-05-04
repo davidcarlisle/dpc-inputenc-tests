@@ -560,25 +560,6 @@
 %    It then inputs |#1.def|.  But it first sets up a test that
 %    produces a warning message if no suitable definitions get read.
 %
-%    \begin{macrocode}
-\ifx\directlua\@undefined\else
-\PackageInfo{xinputenc}{lualatex in 8bit mode}
-\directlua{require("xinputenc")}
-\directlua{xinputenc.register_callbacks()}
-\fi
-%    \end{macrocode}
-%
-%    \begin{macrocode}
-\ifx\XeTeXversion\@undefined\else
-\PackageInfo{xinputenc}{xelatex in 8bit mode}
-\XeTeXinputencoding "iso-8859-1"
-\XeTeXdefaultencoding "iso-8859-1"
-\AtEndOfPackage{%
-\XeTeXinputencoding "iso-8859-1"
-\XeTeXdefaultencoding "iso-8859-1"
-}
-\fi
-%    \end{macrocode}
 %
 %    \begin{macrocode}
 \def\inputencoding#1{%
@@ -717,10 +698,52 @@
 % \end{macro}
 %    
 %
+\newif\if@inputenc@active@\@inputenc@active@true
+\DeclareOption{unactivate}{%
+  \ifx\Umathchar\@undefined
+  \PackageWarningNoLine{inputenc}{The unactivate option\MessageBreak
+                          will usually produce broken documents on an 8bit TeX}%
+  \fi
+  \def\@inpenc@loop#1#2{}%
+  \@inputenc@active@false}
+%    \begin{macrocode}
+%    \end{macrocode}
+%
 %    Then for each option, we input that encoding file.
 %    \begin{macrocode}
 \DeclareOption*{\inputencoding{\CurrentOption}}
 \ProcessOptions
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\if@inputenc@active@
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\ifx\directlua\@undefined\else
+\PackageInfo{xinputenc}{lualatex in 8bit mode}
+\directlua{require("xinputenc")}
+\directlua{xinputenc.register_callbacks()}
+\fi
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\ifx\XeTeXversion\@undefined\else
+\PackageInfo{xinputenc}{xelatex in 8bit mode}
+\XeTeXinputencoding "iso-8859-1"
+\XeTeXdefaultencoding "iso-8859-1"
+\AtEndOfPackage{%
+\XeTeXinputencoding "iso-8859-1"
+\XeTeXdefaultencoding "iso-8859-1"
+}
+\fi
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\fi
+%    \end{macrocode}
+%
+%    \begin{macrocode}
 %</package>
 %    \end{macrocode}
 %
