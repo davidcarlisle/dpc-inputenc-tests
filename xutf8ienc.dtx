@@ -286,7 +286,17 @@
 %    the |\fi| out of the way (in case the command has arguments) and
 %    executes it.
 %    \begin{macrocode}
+\def\UTFviiieuone{EU1}%
 \def\UTFviiieutwo{EU2}%
+\def\@hexch@r#1#2#3{%
+\ifnum#1<10 #2#3\the\numexpr#1\relax
+\else\ifnum#1<16
+#2#3\ifcase\numexpr#1-10\relax a\or b\or c\or d\or e\or f\fi
+\else
+\expandafter\@hexch@r\expandafter{\the\numexpr((#1-8)/16)\relax}{^#2}{}%
+\expandafter\@hexch@r\expandafter{\the\numexpr#1-((#1-8)/16)*16\relax}{}{}%
+\fi\fi}
+\def\@hexchar#1{\@hexch@r{#1}^{^0}}
 \def\UTFviii@decode#1:#2#3#4#5#6\@nil{%
 \ifx\@empty#3%
    % 1 octet
@@ -302,8 +312,11 @@
 }%
 \def\UTFviii@defined#1{%
 \ifx#1\relax
-\ifx\f@encoding\UTFviiieutwo
-\luatexUchar\numexpr\expandafter\UTFviii@decode\string#1\@empty\@empty\@empty\@nil\relax
+\edef\UTFviii@temp{\ifx\f@encoding\UTFviiieuone\UTFviiieutwo\else\f@encoding\fi}%
+\ifx\UTFviii@temp\UTFviiieutwo
+\typeout{[\@hexchar{\numexpr\expandafter\UTFviii@decode\string#1\@empty\@empty\@empty\@nil\relax}]}%
+\ifx\luatexUchar\@undefined\char\else\luatexUchar\fi
+\numexpr\expandafter\UTFviii@decode\string#1\@empty\@empty\@empty\@nil\relax
 \else
       \PackageError{inputenc}{ No\space definition\space for\space codepoint\space
                     \number\expandafter\UTFviii@decode\string#1\@empty\@empty\@empty\@nil}\@eha
