@@ -1,0 +1,17 @@
+% -*- coding: windows-1251 -*-
+\documentclass{article}
+
+\usepackage[cp1251,unactivate]{xinputenc}
+
+\ifx\Umathchar\undefined
+\usepackage[X2]{fontenc}
+\else
+\usepackage{fontspec}
+\setmainfont{Arial}
+\input{eu2x2enc.def}
+\fi
+
+\begin{document}
+À,Á,Â,à,á,â
+\end{document}
+
