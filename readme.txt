@@ -5,8 +5,8 @@
 
 This is an experimental extension of inputenc for Unicode TeXs.  It is
 called xinputenc here for LPPL reasons and to allow (with care) side
-by sode comparison with the current inputenc. (Most of the .def files
-have the smae names when generated, so you need to note input paths
+by side comparison with the current inputenc. (Most of the .def files
+have the same names when generated, so you need to note input paths
 when doing such a comparison.
 
 It is _not_ intended (ever) for public release, it is just checked in
@@ -62,15 +62,15 @@ module loading system. The current luatex support removes these
 dependencies by using the primitive \directlua and callback.register
 directly. (This may be a simplification too far)
 
-Hoever the code to enable 8bit processing used here is copied directly
+However the code to enable 8bit processing used here is copied directly
 from luainputenc.
 
 
-luainputenc has two mode (actually three)
+luainputenc has two modes (actually three)
 
 8bit mode: lua code is used to process the input 1 byte at a time
-           active characters are used as in clasic TeX to implemnt the
-           encodings. 
+           active characters are used as in classic TeX to implement
+           the encodings. 
 
 unactive mode: full utf8 input is accepted by the file reading, fonts
              are assumed to be Unicode. Active characters are no used.
@@ -83,7 +83,7 @@ In luainputenc lua rather than TeX is mainly used to switch catcodes.
 In this version I have just kept the lua code to enable 8bit mode,
 removing the module loader and the catcode changing features. The
 handling of utf8 input in 8bit mode is modified so that hopefully a
-third mixed mode is not needed.  the unactivate option name is copied
+third mixed mode is not needed.  The unactivate option name is copied
 from this package to enable the unactive mode.
 
 
@@ -96,7 +96,7 @@ aimed to be an inputenc replacement for xetex.
 It uses the \XeTeXinputencoding to get xetex to directly interpret
 incoming bytes in the specified encoding. (xetex supports dozens of
 encodings) No active characters are used. As a result all inpt is seen
-to teh macro layer as full Uniocde input and effectively works as if
+to the macro layer as full Unicode input and effectively works as if
 it was utf-8 input to xetex, without the package. In particular it
 more or less mandates the use of Unicode fonts as there is no mapping
 to traditional 8 or 7 bit font ranges.
@@ -111,22 +111,22 @@ to traditional 8 or 7 bit font ranges.
 ============
 
 While investigating updating inputenc for the 2014/05/01 release and
-in particular commenst on the preview of that release, I was looking
+in particular comments on the preview of that release, I was looking
 at this again in detail and needed to make code and record thoughts in
 order that I might remember next time this comes up. this package is
 _not_ stable or intended for use on anything but the test documents
-contained in the distributiion.
+contained in the distribution.
 
 Plan:
 
 2 modes
 
-default "8 bit" mode
+Default "8 bit" mode
 
-  should be compatible with the traditional use of inputenc with
+  Should be compatible with the traditional use of inputenc with
   (pdf)latex.  
 
-  All input is read 1 byte=1c haracter (with the ssame character code)
+  All input is read 1 byte=1 character (with the same character code).
   No characters higer than hex FF are seen in the input stream
   All mapping done via active characters.
 
@@ -136,19 +136,21 @@ default "8 bit" mode
 
   8bit input is enabled in luatex with some lua taken from luainputenc
   and in xetex via \XeTeXinputencoding "iso-8859-1" (which is a bit of
-  an abuse of that encoding, but whatever)
+  an abuse of that encoding, but whatever, may switch to "byte" encoding
+  to give a hint that the input is not being interpreted as characters.)
+  
 
 
 Unicode/unactivate mode
 
-   enabled with explict unactivate option 
-   (possibly should be enabled by default with some combinations of
-   engine and encoding)
+   Enabled with explicit unactivate option.
+   (Possibly should be enabled by default with some combinations of
+   engine and encoding.)
 
    No active characters are used.
 
-   file stream is parsed by the engine to return unicode characters
-   (just 0-FF in the case of classic TeX)
+   File stream is parsed by the engine to return unicode characters
+   (just 0-FF in the case of classic TeX).
 
    Currently in lualatex  this means input must be utf-8, although one
    could in principle emulate more of \XeTeXinputencoding behaviour
@@ -163,9 +165,9 @@ Unicode/unactivate mode
    supplied. The (x)inputenc use is _not_ guarded by any tests on the
    engine in use, however tests using Unicode fonts (currently just
    Arial) have a guard selecting fontenc for pdftex, so that there is
-   some fallback. Wit this all the 8bit tests should work on all
-   engines. The unactve versions mostly don't work yest (and probably
-   can't work in pdftex, they should however give sensible error
+   some fallback. With this all the 8bit tests should work on all
+   engines. The unactive versions mostly don't work yet (and probably
+   can't work in pdftex) they should however give sensible error
    messages.
 
 
@@ -185,17 +187,17 @@ Unicode/unactivate mode
   luatex has the expandable primitive \(luatex)Uchar which constructs
   the character from its number.
 
-  in xetex I am currently using \char but that is not expandable so
+  In xetex I am currently using \char but that is not expandable so
   will mess up ligatures etc (I think, not sure how this works in
   xetex). It's possible to generate things like ^^^410 (for the
   cyrillic examples) and the code for that is there, but It's not
-  clear that that can be used without \scantokens so ens up again not
+  clear that that can be used without \scantokens so ends up again not
   being expandable.
 
 
-  unactive mode is mostly unimplemented and just a sketch.
+  The unactive mode is mostly unimplemented and just a sketch.
 
-  For latin1 input and Uniocde fonts in 8bit mode accented characters
+  For latin1 input and Unicode fonts in 8bit mode accented characters
   go via LICR such as \'{e} and so work being mapped back to EU2
   encoding.  For cyrillic though as shown in test-cp1251-eu2.tex
   The input gets mapped to things like \CYRA which would be defined if
@@ -218,10 +220,10 @@ Unicode/unactivate mode
   so that it used mapping tables for supported encodings (there may be
   an existing lua library for this?)
   Or we could just support this on xelatex but I'm not sure the
-  feature is useful enough to introduce incompatobilities.
+  feature is useful enough to introduce incompatibilities.
 
   The code is only tested on the supplied files, not with real
-  documents and not in combination with any pther packages.
+  documents and not in combination with any other packages.
 
   None of the current test files use auxiliary files. Once these are
   working we need to test aux toc ind bbl etc.
