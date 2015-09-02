@@ -3101,8 +3101,8 @@ end
 
 
     function xinputenc.register_callbacks()
-       callback.register('process_output_buffer', xinputenc.fake_utf_write)
-       callback.register('process_input_buffer', xinputenc.fake_utf_read)
+       luatexbase.add_to_callback('process_output_buffer', xinputenc.fake_utf_write, "utf8 writing")
+       luatexbase.add_to_callback('process_input_buffer', xinputenc.fake_utf_read, "utf8 reading")
     end
 
 %</lua>
